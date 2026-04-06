@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+step_outputs/*.png
+step_outputs/*.jpg
+.DS_Store
+*.egg-info/
