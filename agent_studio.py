@@ -336,11 +336,25 @@ def initial_plan(query):
             {"tool": "ANSWER", "label": "Final answer"},
         ]
 
-    # Question → VLM first, then agent decides if detection needed
-    if any(q.startswith(w) for w in ("what", "describe", "tell", "explain", "analyze", "is ", "are ", "do ", "does ", "can ", "who", "why", "where")):
+    # Identify / list / add / name objects → always use detection
+    if any(w in q for w in ("identify", "list", "name", "label", "add ", "different",
+                             "items", "objects", "things", "stuff", "inventory",
+                             "all the", "each", "every ")):
+        return [
+            {"tool": "VLM", "label": "Identify objects in scene",
+             "question": "List the main distinct object types visible in this image as comma-separated single nouns. Be specific (e.g. 'apple' not 'fruit')."},
+            {"tool": "DETECT_EACH", "label": "Detect & segment each type"},
+            {"tool": "VLM", "label": "Analyze with segmentation results"},
+            {"tool": "ANSWER", "label": "Final answer"},
+        ]
+
+    # Question → VLM first, then detect what was found
+    if any(q.startswith(w) for w in ("what", "describe", "tell", "explain", "analyze",
+                                      "is ", "are ", "do ", "does ", "can ", "who", "why", "where")):
         return [
             {"tool": "VLM", "label": "Visual analysis"},
-            {"tool": "VLM_PLAN", "label": "Decide next step"},
+            {"tool": "DETECT_EACH", "label": "Verify with segmentation"},
+            {"tool": "ANSWER", "label": "Final answer"},
         ]
 
     # Short = object name
@@ -351,10 +365,13 @@ def initial_plan(query):
             {"tool": "ANSWER", "label": "Final answer"},
         ]
 
-    # Default → agentic: let Gemma reason and re-plan
+    # Default → identify then detect (always use both models)
     return [
-        {"tool": "VLM", "label": "Visual analysis"},
-        {"tool": "VLM_PLAN", "label": "Decide next step"},
+        {"tool": "VLM", "label": "Identify objects",
+         "question": "List the main distinct object types visible in this image as comma-separated single nouns. Be specific."},
+        {"tool": "DETECT_EACH", "label": "Detect & segment each type"},
+        {"tool": "VLM", "label": "Analyze results"},
+        {"tool": "ANSWER", "label": "Final answer"},
     ]
 
 
