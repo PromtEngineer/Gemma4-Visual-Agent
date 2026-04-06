@@ -242,7 +242,35 @@ def execute_agent_events(img: Image.Image, query: str):
         step_idx += 1
         executed += 1
 
-    yield {"type": "done"}
+    # Build structured JSON output
+    json_output = {
+        "query": query,
+        "image_size": {"width": img.width, "height": img.height},
+        "detections": {},
+        "answer": ctx.get("final_answer", detail),
+    }
+    for obj_name, dets in detection_cache.items():
+        json_output["detections"][obj_name] = {
+            "count": len(dets),
+            "instances": []
+        }
+        for i, d in enumerate(dets):
+            inst = {"id": i + 1}
+            if "bbox" in d:
+                inst["bbox"] = {"x1": d["bbox"][0], "y1": d["bbox"][1],
+                                "x2": d["bbox"][2], "y2": d["bbox"][3]}
+            if "cx" in d:
+                inst["center"] = {"x": round(d["cx"], 4), "y": round(d["cy"], 4)}
+            if "mask" in d:
+                inst["mask_area_px"] = int(d["mask"].sum())
+                inst["mask_coverage"] = round(float(d["mask"].sum()) / (img.width * img.height), 4)
+            json_output["detections"][obj_name]["instances"].append(inst)
+    if "comparison" in ctx:
+        json_output["comparison"] = ctx["comparison"]
+    if "vlm_response" in ctx:
+        json_output["vlm_analysis"] = ctx["vlm_response"]
+
+    yield {"type": "done", "json_output": json_output}
 
 
 # ── API endpoints ─────────────────────────────────────────────────────
@@ -440,6 +468,11 @@ a{color:var(--indigo);text-decoration:none}
 .spinner{width:16px;height:16px;border:2px solid var(--bg-overlay);border-top-color:var(--indigo);border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* JSON output */
+.json-toggle{background:var(--bg-surface);border:1px solid var(--bg-elevated);color:var(--text-2);padding:8px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;font-family:var(--font);transition:all .2s;width:100%}
+.json-toggle:hover{border-color:var(--text-3);color:var(--text-1)}
+.json-output{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-md);padding:16px;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--text-2);line-height:1.6;overflow-x:auto;max-height:500px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;scrollbar-width:thin;scrollbar-color:var(--bg-overlay) transparent}
+
 /* Responsive */
 @media(max-width:900px){
   .agent-layout,.compare-layout{grid-template-columns:1fr}
@@ -485,6 +518,10 @@ a{color:var(--indigo);text-decoration:none}
       </div>
       <div class="results-panel" id="agent-results">
         <div class="results-empty">Results will appear here step by step</div>
+      </div>
+      <div id="agent-json-wrap" style="display:none;margin-top:12px;">
+        <button onclick="toggleJson()" class="json-toggle" id="json-toggle-btn">Show JSON Output</button>
+        <pre id="agent-json" class="json-output" style="display:none;"></pre>
       </div>
     </div>
   </div>
@@ -696,9 +733,29 @@ async function runAgent() {
       panel.innerHTML += renderStep(ev);
     } else if (ev.type === 'done') {
       btn.disabled = false; btn.textContent = 'Run'; btn.classList.remove('processing');
+      if (ev.json_output) {
+        const wrap = document.getElementById('agent-json-wrap');
+        const pre = document.getElementById('agent-json');
+        wrap.style.display = 'block';
+        pre.textContent = JSON.stringify(ev.json_output, null, 2);
+        pre.style.display = 'none';
+        document.getElementById('json-toggle-btn').textContent = 'Show JSON Output';
+      }
     }
   });
   btn.disabled = false; btn.textContent = 'Run'; btn.classList.remove('processing');
+}
+
+function toggleJson() {
+  const pre = document.getElementById('agent-json');
+  const btn = document.getElementById('json-toggle-btn');
+  if (pre.style.display === 'none') {
+    pre.style.display = 'block';
+    btn.textContent = 'Hide JSON Output';
+  } else {
+    pre.style.display = 'none';
+    btn.textContent = 'Show JSON Output';
+  }
 }
 
 // ── Compare ──
