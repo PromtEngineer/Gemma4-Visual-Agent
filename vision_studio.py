@@ -108,8 +108,18 @@ def execute_agent_events(img: Image.Image, query: str):
 
         elif tool == "DETECT_EACH":
             vlm_text = ctx.get("vlm_response", "")
-            candidates = [c.strip().lower().rstrip('.') for c in vlm_text.split(",")]
-            candidates = [c for c in candidates if c and len(c) < 25][:6]
+            # Parse object list from various formats
+            raw = vlm_text
+            raw = re.sub(r'\*\*([^*]+)\*\*', r'\1', raw)
+            raw = re.sub(r'^\s*[\d]+[.)]\s*', '', raw, flags=re.MULTILINE)
+            raw = re.sub(r'^\s*[-*]\s*', '', raw, flags=re.MULTILINE)
+            parts_raw = re.split(r'[,\n*]|\band\b', raw)
+            candidates = []
+            for p in parts_raw:
+                c = p.strip().lower().rstrip('.').strip()
+                if c and len(c) < 25 and len(c.split()) <= 3:
+                    candidates.append(c)
+            candidates = candidates[:8]
             parts, color_off = [], 0
             combined = img.copy()
             for obj in candidates:
