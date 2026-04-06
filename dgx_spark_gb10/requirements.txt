@@ -1,0 +1,19 @@
+# NVIDIA CUDA stack for Vision Agent Studio (DGX Spark GB10 profile).
+# Install PyTorch with a wheel matching your driver/CUDA stack first, then:
+#   pip install -r requirements.txt
+#   pip install "falcon-perception[torch] @ git+https://github.com/tiiuae/falcon-perception.git"
+
+accelerate>=1.0.0
+fastapi>=0.115.0
+gradio>=5.0.0
+numpy>=1.26.0
+opencv-python-headless>=4.8.0
+Pillow>=10.0.0
+pycocotools>=2.0.7
+# Gemma 4 (google/gemma-4-E4B-it) needs Gemma4 + AutoModelForMultimodalLM; stable PyPI
+# transformers 4.57.x may not include them yet — use main until a PyPI release ships gemma4:
+transformers @ git+https://github.com/huggingface/transformers.git
+uvicorn[standard]>=0.32.0
+
+# PyTorch: pick the index URL for your CUDA version (example: CUDA 12.8 / driver 570+)
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128

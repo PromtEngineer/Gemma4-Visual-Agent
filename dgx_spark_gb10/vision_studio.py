@@ -1,8 +1,9 @@
 """
-Vision Agent Studio — Premium Web UI
-======================================
+Vision Agent Studio — Premium Web UI (NVIDIA CUDA / DGX Spark GB10 profile)
+=========================================================================
 FastAPI + SSE backend with inline HTML/CSS/JS frontend.
-Two modes: Agent Pipeline (step-by-step) and Compare (Gemma-only vs Falcon+Gemma).
+Same UX as repo-root ``vision_studio.py``; imports the PyTorch pipeline from
+this folder's ``agent_studio``. Uses ``../test_data`` for bundled examples.
 """
 
 import os, sys, io, time, json, base64, tempfile, re, traceback
@@ -30,7 +31,8 @@ from agent_studio import (
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEST_DATA = os.path.join(BASE_DIR, "test_data")
+REPO_ROOT = os.path.dirname(BASE_DIR)
+TEST_DATA = os.path.join(REPO_ROOT, "test_data")
 
 EXAMPLES = [
     {"filename": "dogs.jpg",    "query": "How many dogs and what breeds?"},
@@ -531,7 +533,7 @@ a{color:var(--indigo);text-decoration:none}
 
 <div class="header">
   <h1>Vision Agent Studio</h1>
-  <p>Step-by-step agentic visual reasoning, fully local via MLX</p>
+  <p>Step-by-step agentic visual reasoning on NVIDIA GPU (PyTorch — DGX Spark GB10 profile)</p>
   <div class="header-badges">
     <span class="header-badge falcon">Falcon Perception 0.6B</span>
     <span class="header-badge gemma">Gemma 4 E4B</span>

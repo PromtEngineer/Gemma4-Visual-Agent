@@ -3,5 +3,6 @@ __pycache__/
 *.pyc
 step_outputs/*.png
 step_outputs/*.jpg
+dgx_spark_gb10/step_outputs/
 .DS_Store
 *.egg-info/
