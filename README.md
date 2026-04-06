@@ -1,4 +1,4 @@
-# Vision Agent Studio
+# Gemma Vision Agent
 
 An agentic visual reasoning pipeline combining **Falcon Perception** (0.6B, instance segmentation) with **Gemma 4** (4B, visual language model) for object detection, counting, tracking, and scene understanding. Runs fully local on Apple Silicon via MLX.
 
