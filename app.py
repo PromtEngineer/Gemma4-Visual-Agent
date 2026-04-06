@@ -3,7 +3,7 @@ Falcon Perception + Gemma VLM: Object Detection, Segmentation & Visual Reasoning
 ==================================================================================
 A Gradio-based application combining:
 - Falcon Perception (MLX) for object detection & instance segmentation
-- Gemma 3n (MLX) for visual reasoning & natural language understanding
+- Gemma 4 (MLX) for visual reasoning & natural language understanding
 
 Applications: counting, identification, scene analysis, visual Q&A
 """
@@ -25,7 +25,7 @@ gemma_model = None
 gemma_processor = None
 
 FALCON_MODEL_ID = "tiiuae/Falcon-Perception"
-GEMMA_MODEL_ID = "mlx-community/gemma-3n-E4B-it-4bit"
+GEMMA_MODEL_ID = "mlx-community/gemma-4-e4b-it-8bit"
 
 # Color palette for segmentation masks
 COLORS = [
@@ -49,13 +49,13 @@ def load_falcon():
 
 
 def load_gemma():
-    """Load Gemma 3n VLM (MLX)."""
+    """Load Gemma 4 VLM (MLX)."""
     global gemma_model, gemma_processor
     if gemma_model is not None:
         return
     from mlx_vlm import load
     gemma_model, gemma_processor = load(GEMMA_MODEL_ID)
-    print("Gemma 3n VLM loaded.")
+    print("Gemma 4 VLM loaded.")
 
 
 def load_all_models():
@@ -385,7 +385,7 @@ def build_ui():
         gr.Markdown(
             "# Falcon Perception + Gemma VLM Pipeline\n"
             "Combine **Falcon Perception** (detection/segmentation) with "
-            "**Gemma 3n** (visual reasoning) for practical vision applications. "
+            "**Gemma 4** (visual reasoning) for practical vision applications. "
             "All inference runs locally on Apple Silicon via MLX."
         )
 
@@ -479,7 +479,7 @@ def build_ui():
 
         gr.Markdown(
             "---\n"
-            "**Models**: Falcon Perception (0.6B) + Gemma 3n E4B IT (4-bit) | "
+            "**Models**: Falcon Perception (0.6B) + Gemma 4 E4B IT (8-bit) | "
             "**Backend**: MLX (Apple Silicon) | **Fully Local**"
         )
 

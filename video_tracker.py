@@ -3,7 +3,7 @@ Video Object Tracking Pipeline
 ================================
 Uses Falcon Perception (MLX) for per-frame detection + segmentation,
 with IoU-based tracking to maintain object identities across frames.
-Optionally uses Gemma 3n for frame-level reasoning.
+Optionally uses Gemma 4 for frame-level reasoning.
 
 Features:
 - Multi-object detection and tracking

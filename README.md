@@ -1,6 +1,6 @@
 # Vision Agent Studio
 
-An agentic visual reasoning pipeline combining **Falcon Perception** (0.6B, instance segmentation) with **Gemma 3n** (4B, visual language model) for object detection, counting, tracking, and scene understanding. Runs fully local on Apple Silicon via MLX.
+An agentic visual reasoning pipeline combining **Falcon Perception** (0.6B, instance segmentation) with **Gemma 4** (4B, visual language model) for object detection, counting, tracking, and scene understanding. Runs fully local on Apple Silicon via MLX.
 
 ## Quick Start
 
@@ -26,7 +26,7 @@ Upload an image, type a natural language query, and the agent decides what to do
 | `What is happening here?` | Gemma analyzes, then re-plans (may trigger detection) |
 | `Count everything` | Gemma lists object types, Falcon detects each one |
 
-Every step shows which model is running (Falcon Perception or Gemma 3n), the task type, execution time, and visual output.
+Every step shows which model is running (Falcon Perception or Gemma 4), the task type, execution time, and visual output.
 
 ## Applications
 
@@ -48,9 +48,9 @@ Frame-by-frame detection with IoU-based tracking to maintain object identities a
 | Model | HuggingFace ID | Params | Quant | Disk | Role |
 |---|---|---|---|---|---|
 | Falcon Perception | `tiiuae/Falcon-Perception` | 0.6B | float16 | ~1.2 GB | Detection + segmentation |
-| Gemma 3n E4B | `mlx-community/gemma-3n-E4B-it-4bit` | 4B effective | 4-bit | ~5.8 GB | Visual reasoning |
+| Gemma 4 E4B | `mlx-community/gemma-4-e4b-it-8bit` | 4B effective | 8-bit | ~8 GB | Visual reasoning |
 
-Models are downloaded automatically on first run. Total: ~7 GB. Requires 16 GB+ RAM (Apple Silicon M1+).
+Models are downloaded automatically on first run. Total: ~9.2 GB. Requires 16 GB+ RAM (Apple Silicon M1+).
 
 ## How the Pipeline Works
 
@@ -78,11 +78,11 @@ For open-ended questions, the agent enters a **re-planning loop** where Gemma de
 | Tool | Model | What It Does |
 |---|---|---|
 | **DETECT** | Falcon Perception (0.6B) | Instance segmentation with bounding boxes + masks |
-| **VLM** | Gemma 3n E4B (4B) | Visual reasoning, scene description, Q&A |
+| **VLM** | Gemma 4 E4B (4B) | Visual reasoning, scene description, Q&A |
 | **CROP** | (utility) | Zoom into a specific detection for closer inspection |
 | **COMPARE** | (utility) | Compare counts between two object types |
 | **DETECT_EACH** | Falcon Perception | Detect multiple object types identified by VLM |
-| **VLM_PLAN** | Gemma 3n E4B | Re-planning — Gemma decides what to do next |
+| **VLM_PLAN** | Gemma 4 E4B | Re-planning — Gemma decides what to do next |
 
 ### Falcon Perception Internals
 
@@ -178,5 +178,5 @@ python vision_studio.py
 - [Falcon Perception](https://github.com/tiiuae/falcon-perception) — TII's open-vocabulary segmentation model
 - [Falcon Perception Paper](https://arxiv.org/abs/2603.27365) — arXiv:2603.27365
 - [MLX-VLM](https://github.com/Blaizzy/mlx-vlm) — Vision language models on Apple Silicon
-- [Gemma 3n](https://ai.google.dev/gemma/docs/gemma-3n) — Google's efficient multimodal model
+- [Gemma 4](https://ai.google.dev/gemma/docs/gemma-4) — Google's efficient multimodal model
 - [mlx-vlm-falcon](https://github.com/korale77/mlx-vlm-falcon) — Inspiration for the combined pipeline

@@ -2,12 +2,12 @@
 
 ## Overview
 
-Vision Agent Studio is an agentic pipeline that combines **Falcon Perception** (instance segmentation) with **Gemma 3n** (visual reasoning) to perform multi-step visual analysis on images and video. All inference runs locally on Apple Silicon via MLX.
+Vision Agent Studio is an agentic pipeline that combines **Falcon Perception** (instance segmentation) with **Gemma 4** (visual reasoning) to perform multi-step visual analysis on images and video. All inference runs locally on Apple Silicon via MLX.
 
 | Component | Model | Params | Quantization | Role |
 |---|---|---|---|---|
 | **Falcon Perception** | `tiiuae/Falcon-Perception` | 0.6B | float16 | Object detection + instance segmentation |
-| **Gemma 3n** | `mlx-community/gemma-3n-E4B-it-4bit` | 4B effective (8B total) | 4-bit | Visual reasoning, scene understanding, re-planning |
+| **Gemma 4** | `mlx-community/gemma-4-e4b-it-8bit` | 4B effective (8B total) | 8-bit | Visual reasoning, scene understanding, re-planning |
 
 ---
 
@@ -22,7 +22,7 @@ graph TB
 
     subgraph Agent["Agentic Controller"]
         PLAN["Plan Router<br/>(pattern matching)"]
-        REPLAN["Re-planner<br/>(Gemma 3n)"]
+        REPLAN["Re-planner<br/>(Gemma 4)"]
     end
 
     subgraph Falcon["Falcon Perception (0.6B)"]
@@ -31,7 +31,7 @@ graph TB
         ANYUP["AnyUp Upsampler<br/>(full-res masks)"]
     end
 
-    subgraph Gemma["Gemma 3n E4B (4B)"]
+    subgraph Gemma["Gemma 4 E4B (4B)"]
         VLM["Visual Reasoning"]
         DESCRIBE["Scene Description"]
         ANALYZE["Analytical Q&A"]
@@ -197,7 +197,7 @@ We ran both approaches on identical images with identical questions.
 | **Breed/type identification** | Good — identified Corgi and Yorkshire Terrier correctly. | Requires Gemma VLM as second step (Falcon only detects, doesn't classify breeds). |
 | **Scene understanding** | Strong — describes activities, mood, context. | Needs Gemma VLM for reasoning; Falcon alone only detects. |
 | **Speed (simple query)** | 1-4s per query | 3-25s per query (depends on object count) |
-| **Memory footprint** | ~5 GB (4-bit quantized) | ~6.5 GB total (Falcon float16 + Gemma 4-bit) |
+| **Memory footprint** | ~5 GB (8-bit quantized) | ~8 GB total (Falcon float16 + Gemma 8-bit) |
 
 ### When to Use Each
 
@@ -240,7 +240,7 @@ graph LR
 | Badge | Model | Color |
 |---|---|---|
 | `Falcon Perception (0.6B)` | Instance Segmentation / Detection | Indigo |
-| `Gemma 3n E4B (4B)` | Visual Reasoning / Re-planning | Violet |
+| `Gemma 4 E4B (4B)` | Visual Reasoning / Re-planning | Violet |
 | `—` | Crop / Compare / Answer (utility) | Amber / Cyan / Emerald |
 
 ---
@@ -296,7 +296,7 @@ python video_tracker.py   # → http://localhost:7861
 - **Training**: 54M images, 195M positive expressions, 3-stage training
 - **Paper**: arXiv:2603.27365
 
-### Gemma 3n E4B
+### Gemma 4 E4B
 - **Architecture**: MatFormer (activates 4B of 8B total params)
 - **Quantization**: 4-bit (MLX)
 - **Capabilities**: Image, audio, video understanding + text generation

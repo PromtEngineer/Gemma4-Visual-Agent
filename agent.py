@@ -1,7 +1,7 @@
 """
 Vision Agent: Falcon Perception + Gemma VLM
 =============================================
-An agentic pipeline where Gemma acts as the reasoning brain:
+An agentic pipeline where Gemma 4 acts as the reasoning brain:
 1. Parses user intent from natural language
 2. Plans which objects to detect/segment
 3. Calls Falcon Perception as a tool
@@ -29,7 +29,7 @@ gemma_model = None
 gemma_processor = None
 
 FALCON_ID = "tiiuae/Falcon-Perception"
-GEMMA_ID = "mlx-community/gemma-3n-E4B-it-4bit"
+GEMMA_ID = "mlx-community/gemma-4-e4b-it-8bit"
 
 PALETTE = [
     (230, 25, 75), (60, 180, 75), (255, 225, 25), (0, 130, 200),
@@ -488,11 +488,11 @@ def build_agent_ui():
             "An agentic pipeline that **plans**, **detects**, and **reasons** over images.\n\n"
             "Ask natural language questions — the agent decides which tools to use:\n"
             "- **DETECT**: Find & segment objects with Falcon Perception\n"
-            "- **VLM**: Visual reasoning with Gemma 3n\n"
+            "- **VLM**: Visual reasoning with Gemma 4\n"
             "- **CROP**: Zoom into specific detections\n"
             "- **COMPARE**: Count comparisons between object types\n"
             "- **DETECT_EACH**: Auto-discover and detect all object types\n\n"
-            "**Falcon Perception** (0.6B) + **Gemma 3n** (4B) — fully local via MLX"
+            "**Falcon Perception** (0.6B) + **Gemma 4** (4B) — fully local via MLX"
         )
 
         with gr.Row(equal_height=True):

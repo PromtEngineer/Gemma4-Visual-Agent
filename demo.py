@@ -21,7 +21,7 @@ gemma_model = None
 gemma_processor = None
 
 FALCON_ID = "tiiuae/Falcon-Perception"
-GEMMA_ID = "mlx-community/gemma-3n-E4B-it-4bit"
+GEMMA_ID = "mlx-community/gemma-4-e4b-it-8bit"
 
 PALETTE = [
     (230, 25, 75), (60, 180, 75), (255, 225, 25), (0, 130, 200),
@@ -368,7 +368,7 @@ def build_demo():
         gr.Markdown(
             "# Falcon Perception + Gemma VLM\n"
             "Object detection, segmentation, counting, tracking & visual reasoning. "
-            "**Falcon Perception** (0.6B) + **Gemma 3n** (4B) — fully local via MLX."
+            "**Falcon Perception** (0.6B) + **Gemma 4** (4B) — fully local via MLX."
         )
 
         with gr.Tabs():

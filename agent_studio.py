@@ -1,7 +1,7 @@
 """
 Vision Agent Studio — Agentic Loop with Re-planning
 =====================================================
-Falcon Perception (segmentation/detection) + Gemma 3n (reasoning).
+Falcon Perception (segmentation/detection) + Gemma 4 (reasoning).
 Each step shows which model and task is used.
 The agent can re-plan after seeing results (multi-step reasoning loop).
 """
@@ -17,7 +17,7 @@ import gradio as gr
 falcon_model = falcon_tokenizer = falcon_args = None
 gemma_model = gemma_processor = None
 FALCON_ID = "tiiuae/Falcon-Perception"
-GEMMA_ID = "mlx-community/gemma-3n-E4B-it-4bit"
+GEMMA_ID = "mlx-community/gemma-4-e4b-it-8bit"
 
 PALETTE = [
     (99, 102, 241), (16, 185, 129), (245, 158, 11), (239, 68, 68),
@@ -205,8 +205,8 @@ STEP_META = {
     "DETECT":      {"icon": "🔍", "color": "#6366f1", "model": "Falcon Perception", "model_size": "0.6B", "task": "Instance Segmentation"},
     "DETECT_DET":  {"icon": "🔍", "color": "#6366f1", "model": "Falcon Perception", "model_size": "0.6B", "task": "Object Detection"},
     "DETECT_EACH": {"icon": "🔎", "color": "#818cf8", "model": "Falcon Perception", "model_size": "0.6B", "task": "Multi-class Segmentation"},
-    "VLM":         {"icon": "🧠", "color": "#8b5cf6", "model": "Gemma 3n E4B",      "model_size": "4B",   "task": "Visual Reasoning"},
-    "VLM_PLAN":    {"icon": "🤔", "color": "#a78bfa", "model": "Gemma 3n E4B",      "model_size": "4B",   "task": "Re-planning"},
+    "VLM":         {"icon": "🧠", "color": "#8b5cf6", "model": "Gemma 4 E4B",       "model_size": "4B",   "task": "Visual Reasoning"},
+    "VLM_PLAN":    {"icon": "🤔", "color": "#a78bfa", "model": "Gemma 4 E4B",       "model_size": "4B",   "task": "Re-planning"},
     "CROP":        {"icon": "✂️", "color": "#f59e0b", "model": "—",                 "model_size": "",     "task": "Region Crop"},
     "COMPARE":     {"icon": "⚖️", "color": "#06b6d4", "model": "—",                 "model_size": "",     "task": "Count Comparison"},
     "ANSWER":      {"icon": "✅", "color": "#10b981", "model": "—",                 "model_size": "",     "task": "Final Answer"},
@@ -595,7 +595,7 @@ def build_app():
                 Vision Agent Studio
             </h1>
             <p style="font-size:14px; color:#9ca3af; margin:4px 0 0;">
-                Falcon Perception + Gemma 3n &mdash; agentic step-by-step visual reasoning, fully local via MLX
+                Falcon Perception + Gemma 4 &mdash; agentic step-by-step visual reasoning, fully local via MLX
             </p>
         </div>
         """)

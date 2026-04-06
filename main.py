@@ -17,7 +17,7 @@ def build_combined_ui():
         gr.Markdown(
             "# Falcon Perception + Gemma VLM Vision Pipeline\n"
             "**Falcon Perception** (0.6B) for detection & segmentation + "
-            "**Gemma 3n** (4B) for visual reasoning.\n"
+            "**Gemma 4** (4B) for visual reasoning.\n"
             "All inference runs locally on Apple Silicon via MLX."
         )
 
@@ -128,7 +128,7 @@ def build_combined_ui():
 
         gr.Markdown(
             "---\n"
-            "**Models**: Falcon Perception (0.6B) + Gemma 3n E4B IT (4-bit) | "
+            "**Models**: Falcon Perception (0.6B) + Gemma 4 E4B IT (8-bit) | "
             "**Backend**: MLX (Apple Silicon) | **Fully Local**"
         )
 

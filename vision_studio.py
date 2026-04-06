@@ -324,7 +324,7 @@ async def compare_stream(request: Request):
         total_t0 = time.time()
 
         # Pipeline A: Gemma-only
-        yield sse({"type": "pipeline_start", "pipeline": "gemma_only", "label": "Gemma 3n (VLM Only)"})
+        yield sse({"type": "pipeline_start", "pipeline": "gemma_only", "label": "Gemma 4 (VLM Only)"})
         meta = STEP_META["VLM"]
         yield sse({"type": "step_start", "pipeline": "gemma_only", "step_index": 0,
                    "tool": "VLM", "label": "Direct visual reasoning",
@@ -486,7 +486,7 @@ a{color:var(--indigo);text-decoration:none}
   <p>Step-by-step agentic visual reasoning, fully local via MLX</p>
   <div class="header-badges">
     <span class="header-badge falcon">Falcon Perception 0.6B</span>
-    <span class="header-badge gemma">Gemma 3n 4B</span>
+    <span class="header-badge gemma">Gemma 4 E4B</span>
   </div>
 </div>
 
@@ -546,7 +546,7 @@ a{color:var(--indigo);text-decoration:none}
       </div>
       <div class="compare-panel violet" id="panel-gemma">
         <div class="panel-header">
-          <div><div class="panel-title" style="color:var(--violet)">Gemma 3n Only</div>
+          <div><div class="panel-title" style="color:var(--violet)">Gemma 4 Only</div>
           <div class="panel-subtitle">VLM reasoning without detection</div></div>
           <span class="panel-time" id="gemma-time"></span>
         </div>
