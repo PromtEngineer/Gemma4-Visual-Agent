@@ -1,8 +1,13 @@
 # Gemma Vision Agent
 
-An agentic visual reasoning pipeline combining **Falcon Perception** (0.6B, instance segmentation) with **Gemma 4** (4B, visual language model) for object detection, counting, tracking, and scene understanding. Runs fully local on Apple Silicon via MLX.
+An agentic visual reasoning pipeline combining **Falcon Perception** (0.6B, instance segmentation) with **Gemma 4** (4B, visual language model) for object detection, counting, tracking, and scene understanding.
 
-## Quick Start
+| Platform | Backend | Directory | Quick start |
+|----------|---------|-----------|-------------|
+| **macOS Apple Silicon** | MLX | repo root | `source .venv/bin/activate && python vision_studio.py` |
+| **NVIDIA DGX / CUDA** | PyTorch | `dgx_spark_gb10/` | See [`dgx_spark_gb10/README.md`](dgx_spark_gb10/README.md) |
+
+## Quick Start (macOS / MLX)
 
 ```bash
 # Activate the environment
@@ -45,12 +50,12 @@ Frame-by-frame detection with IoU-based tracking to maintain object identities a
 
 ## Models
 
-| Model | HuggingFace ID | Params | Quant | Disk | Role |
-|---|---|---|---|---|---|
-| Falcon Perception | `tiiuae/Falcon-Perception` | 0.6B | float16 | ~1.2 GB | Detection + segmentation |
-| Gemma 4 E4B | `mlx-community/gemma-4-e4b-it-8bit` | 4B effective | 8-bit | ~8 GB | Visual reasoning |
+| Model | HuggingFace ID | Params | Role |
+|---|---|---|---|
+| Falcon Perception | `tiiuae/Falcon-Perception` | 0.6B | Detection + segmentation |
+| Gemma 4 E4B | `mlx-community/gemma-4-e4b-it-8bit` (MLX) / `google/gemma-4-E4B-it` (CUDA) | 4B | Visual reasoning |
 
-Models are downloaded automatically on first run. Total: ~9.2 GB. Requires 16 GB+ RAM (Apple Silicon M1+).
+Models are downloaded automatically on first run. The MLX build uses 8-bit quantisation (~9.2 GB total, 16 GB+ RAM on Apple Silicon M1+). The CUDA build uses bfloat16 and runs on any NVIDIA GPU with sufficient VRAM.
 
 ## How the Pipeline Works
 
@@ -114,21 +119,27 @@ Results from identical queries on the same images:
 ## File Structure
 
 ```
-Gemma-4/
+Gemma4-Visual-Agent/
 ├── vision_studio.py      # Main app — FastAPI + premium HTML/CSS/JS UI
 │                          # Two tabs: Agent Pipeline + Compare
-│
 ├── agent_studio.py       # Core pipeline logic (detection, VLM, planning,
 │                          # re-planning, rendering, step metadata)
-│
-├── agent.py              # Standalone Gradio agent UI (older version)
+├── agent.py              # Standalone Gradio agent UI
 ├── demo.py               # Gradio unified UI (image + video tabs)
 ├── app.py                # Gradio image analysis app
 ├── video_tracker.py      # Video tracking with IoU tracker
 ├── main.py               # Combined Gradio launcher
 │
-├── ARCHITECTURE.md       # Detailed architecture docs with Mermaid diagrams
-├── README.md             # This file
+├── dgx_spark_gb10/       # ── NVIDIA DGX / CUDA variant ──
+│   ├── README.md         # DGX-specific setup & docs
+│   ├── requirements.txt  # PyTorch/CUDA dependencies
+│   ├── agent_studio.py   # Core pipeline (PyTorch backend)
+│   ├── vision_studio.py  # FastAPI UI (PyTorch backend)
+│   ├── app.py            # Gradio image analysis
+│   ├── agent.py          # Gradio agent UI
+│   ├── demo.py           # Gradio unified UI
+│   ├── video_tracker.py  # Video tracking
+│   └── main.py           # Combined launcher
 │
 ├── test_data/            # Example images + test videos
 │   ├── dogs.jpg          # Two dogs (Corgi + Yorkshire Terrier)
@@ -137,8 +148,10 @@ Gemma-4/
 │   ├── dogs_video.mp4    # Dogs zoom video (20 frames)
 │   └── test_panning.mp4  # Street panning video (30 frames)
 │
+├── ARCHITECTURE.md       # Detailed architecture docs with Mermaid diagrams
+├── README.md             # This file
 ├── step_outputs/         # Temporary step images for UI rendering
-└── .venv/                # Python 3.12 virtual environment
+└── .venv/                # Python 3.12 virtual environment (macOS)
 ```
 
 ## All Entry Points
@@ -151,27 +164,37 @@ Gemma-4/
 | `python video_tracker.py` | 7861 | Gradio video tracking UI |
 | `python app.py` | 7860 | Gradio image analysis (original) |
 
-## Setup (from scratch)
+## Setup
+
+### macOS (Apple Silicon / MLX)
 
 ```bash
-# Create virtual environment
 /opt/homebrew/bin/python3.12 -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies
 pip install mlx-vlm gradio opencv-python-headless Pillow numpy pycocotools
 pip install "falcon-perception[mlx] @ git+https://github.com/tiiuae/falcon-perception.git"
 pip install fastapi uvicorn
 
-# Launch
 python vision_studio.py
 ```
 
-### Requirements
-- macOS with Apple Silicon (M1/M2/M3/M4)
-- Python 3.10+
-- 16 GB+ RAM recommended
-- ~7 GB disk for model weights (auto-downloaded)
+**Requirements:** macOS with Apple Silicon (M1/M2/M3/M4), Python 3.10+, 16 GB+ RAM, ~7 GB disk for model weights (auto-downloaded).
+
+### NVIDIA DGX / CUDA (PyTorch)
+
+See full instructions in [`dgx_spark_gb10/README.md`](dgx_spark_gb10/README.md). Quick version:
+
+```bash
+cd dgx_spark_gb10
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+pip install -r requirements.txt
+pip install "falcon-perception[torch] @ git+https://github.com/tiiuae/falcon-perception.git"
+
+python vision_studio.py
+```
+
+**Requirements:** Linux with NVIDIA GPU (tested on DGX Spark GB10), Python 3.10+, CUDA-compatible PyTorch, HuggingFace auth for Gemma (`huggingface-cli login`).
 
 ## References
 
